@@ -1,0 +1,44 @@
+config:
+  target: "http://localhost:3000"   # URL BASE A TESTEAR
+  phases:                           # DEFINICION DE PRUEBAS
+    - duration: 10                  # TIEMPO DE PRUEBA, 60 SEGUNDOS EN ESTE CASO
+      arrivalRate: 300                # CANTIDAD DE PRUEBAS POR SEGUNDO
+
+scenarios:                          # ESCENARIOS DE PRUEBA
+  - name: "Registro y login de usuarios"
+    flow:                           #ACA EMPIEZA EL FLUJO DE PRUEBA
+      - log: "Creando usuario con faker"
+      - get:
+          url: "/user/faker"
+          capture:
+            - json: "$.nombre"
+              as: "nombre"
+            - json: "$.role"
+              as: "role"
+            - json: "$.email"
+              as: "email"
+            - json: "$.password"
+              as: "password"
+            - json: "$.fechaNac"
+              as: "fechaNac"
+            - json: "$.carrito"
+              as: "carrito"
+
+      - log: "Guardando usuario en DB"
+      - post:
+          url: "/user/register"
+          json:
+            nombre: {{nombre}}
+            role: {{role}}
+            email: {{email}}
+            password: {{password}}
+            fechaNac: {{fechaNac}}
+            carrito: {{carrito}}
+      - think: 2 #ESPERAMOS 2 SEGUNDOS
+
+      - log: "Logueando usuario"
+      - post:
+          url: "/user/login"
+          json:
+            nombre: {{nombre}}
+            password: {{password}}
