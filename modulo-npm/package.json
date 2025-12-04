@@ -1,0 +1,22 @@
+{
+  "name": "muestraoperacionescoder2",
+  "version": "1.0.0",
+  "description": "modulo de 4 operaciones matematicas basicas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "matematica",
+    "suma",
+    "resta",
+    "multiplicacion",
+    "division"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "muestraoperacionescoder2": "^1.0.0"
+  }
+}
