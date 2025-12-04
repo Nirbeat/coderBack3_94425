@@ -1,5 +1,5 @@
 //DICCIONARIO DE OBJETOS DE ERRORES DE LOGIN (CON OBJETOS)
-const ErrorDictionary = {
+export const ErrorDictionary = {
     EMPTY_PASSWORD: {
         message: "Ocurrio un problema con el password",
         cause: "Se esperaba una cadena de texto, se recibio undefined",
@@ -25,54 +25,32 @@ const ErrorDictionary = {
         name: "WRONG_USER"
     }
 }
-//CLASE DE ERRORES PERSONALIZADOS (CON HERENCIA)
-//LA VENTAJA DE HACERLO ASI ES QUE PUEDEN PASARSE OBJETOS CON LA CANTIDAD DE
-// PROPIEDADES QUE NECESITEN (CODIGOS DE RESPUESTA, POR EJEMPLO)
-class CustomError extends Error {
+
+export class CustomError extends Error {
     constructor({ message, cause, code, name }) {
         super(message, { cause });
         this.code = code;
         this.name = name;
     }
 }
-//TRAER FUNCION DE LOGIN Y EJECUTAR LOS ERRORES PERSONALIZADOS
-export function login(user, password) {
-    if (password == "") {
-        throw new CustomError(ErrorDictionary.EMPTY_PASSWORD);
-    }
-    if (user == "") {
-        throw new CustomError(ErrorDictionary.EMPTY_USER);
-    }
-    if (password != "password") {
-        throw new CustomError(ErrorDictionary.WRONG_PASSWORD);
-    }
-    if (user != "user") {
-        throw new CustomError(ErrorDictionary.WRONG_USER);
-    }
-    if (password == "password" && user == "user") {
-        console.log("se ha logueado exitosamente");
-        return 0;
-    }
-}
-
-// MIDDLEWARE PARA MANEJAR ERRORES
 
 export function loginErrorHandler(err, req, res, next) {
 
-    // INTERCEPTAMOS LOS ERRORES POR SU CÓDIGO
     switch (err.code) {
-        // PARA CUALQUIER CASO, SE PUEDE USAR LA LOGICA QUE SEA NECESARIA
         case -1:
-            console.log(err.name);
+            // MIENTRAS MÁS ESPECIFICO SEA LO QUE PASAMOS AL LOGGER, MEJOR
+            req.logger.error(`ha ocurrido un error al loguearse ${err.name} - ${err.message} - ${err.cause}`);
             break;
         case -2:
-            console.log(err.name);
+            // PARA ESTE ERROR, VAMOS A PASAR EL ENDPOINT, VERBO, INFO DEL ERROR Y TIMESTAMP
+            // revisar archivo errors.log para ver el resultado
+            req.logger.error(`${req.url} - ${req.method} - ${err.name} - ${err.message} - ${err.cause} - ${new Date().toISOString()}`);
             break;
         case 1:
-            console.log(err.name);
+            console.log("ErrorHandler" ,err.name);
             break;
         case 2:
-            console.log(err.name);
+            console.log("ErrorHandler" ,err.name);
             break;
     }
 }
