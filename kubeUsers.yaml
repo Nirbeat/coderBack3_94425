@@ -1,0 +1,65 @@
+# ESTE PRIMER BLOQUE CONFIGURA EL SERVICIO EXPUESTO A LOS CLIENTES
+apiVersion: v1
+kind: Service
+metadata: 
+  name: kubeservice
+spec:
+  selector:
+    app: kubeusers
+  ports:
+    - port: 80
+    # Puerto de mi app
+      targetPort: 3000
+  type: LoadBalancer
+---
+# ESTE SEGUNDO BLOQUE CONFIGURA LO QUE NECESITA MI APLICACION
+# Define la versión de la API de Kubernetes que se está utilizando
+apiVersion: apps/v1
+# Especifica el tipo de objeto de Kubernetes que se está creando
+kind: Deployment
+# Metadatos del Deployment (nombre, namespace, etc.)
+metadata:
+  # Nombre del Deployment
+  name: kubedeploy
+# Datos de configuración almacenados en el Deployment
+spec:
+  # Réplicas del recurso
+  replicas: 5
+  # Selector para identificar los pods relacionados
+  selector:
+    # Etiqueta para el observador de cambios
+    matchLabels:
+      # Aplicación que está siendo observada
+      app: kubeusers
+  # Configuración de templates
+  template:
+    # Metadatos del template
+    metadata:
+      # Etiquetas del template
+      labels:
+        # Identificador de la aplicación
+        app: kubeusers
+    # Especificaciones del contenedor
+    spec:
+      # Lista de contenedores en el pod
+      containers:
+      # Nombre de la imagen del contenedor
+      - name: kubecontainer
+        # Referencia de imagen del contenedor
+        # Ponemos el nombre de nuestra imagen de Docker
+        # Si está en Docker Hub, el formato es:
+        # <nombre de usuario>/<nombre de la imagen>: <version (latest por defecto)>
+        image: ejemplo:latest
+        # Puertos expuestos por el contenedor
+        ports:
+        # Puerto de conexión del contenedor
+        - containerPort: 8080
+      # Configuración de almacenamiento de variables de entorno
+        env:
+        # # URL de conexión a MongoDB
+        # - name: MONGO_URL
+        #   value: url de conexion
+      # Política de extracción de imágenes
+      # Fuerzo "Never" para que no busque en Docker Hub ya que uso local
+      # De otra manera, se puede poner "Always" o "IfNotPresent"
+        imagePullPolicy: Never
